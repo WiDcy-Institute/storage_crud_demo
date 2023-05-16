@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
-  runApp(const MyApp());
+  runApp(MyApp());
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+
+   MyApp({super.key});
 
   // This widget is the root of your application.
   @override
@@ -81,91 +82,96 @@ class _MyHomePageState extends State<MyHomePage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Flutter SharedPreferences Demo'),
+        title: Text('Storage Demo'),
       ),
-      body: Column(
-        children: [
-          TextField(
-            controller: _textEditingController,
-            decoration: InputDecoration(
-              hintText: 'Enter a new item',
+      body: Padding(
+        padding: EdgeInsets.only(left: 16, right: 16),
+        child: Column(
+          children: [
+            TextField(
+              controller: _textEditingController,
+              decoration: InputDecoration(
+                hintText: 'Enter a new item',
+              ),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await _addItem(_textEditingController.text);
-              _textEditingController.clear();
-            },
-            child: Text('Add'),
-          ),
-          Expanded(
-            child: ListView.builder(
-              itemCount: _items.length,
-              itemBuilder: (BuildContext context, int index) {
-                return Dismissible(
-                  key: ValueKey(_items[index]),
-                  onDismissed: (direction) async {
-                    if (direction == DismissDirection.endToStart) {
-                      await _deleteItem(index);
-                    } else if (direction == DismissDirection.startToEnd) {
-                      // Show dialog to edit item
-                      String? newItem = await showDialog<String>(
-                        context: context,
-                        builder: (BuildContext context) {
-                          return AlertDialog(
-                            title: Text('Edit Item'),
-                            content: TextField(
-                              controller: TextEditingController(text: _items[index]),
-                              autofocus: true,
-                            ),
-                            actions: [
-                              TextButton(
-                                onPressed: () {
-                                  Navigator.of(context).pop();
-                                },
-                                child: Text('Cancel'),
-                              ),
-                              TextButton(
-                                onPressed: () async {
-                                  await _updateItem(index, _textEditingController.text);
-                                  Navigator.of(context).pop(_textEditingController.text);
-                                },
-                                child: Text('Save'),
-                              ),
-                            ],
-                          );
-                        },
-                      );
-                    }
-                  },
-                  background: Container(
-                    color: Colors.green,
-                    alignment: Alignment.centerLeft,
-                    child: Icon(Icons.edit),
-                  ),
-                  secondaryBackground: Container(
-                    color: Colors.red,
-                    alignment: Alignment.centerRight,
-                    child: Icon(Icons.delete),
-                  ),
-                  child: Card(
-                    elevation: 3,
-                    child: ListTile(
-                      title: Text(_items[index]),
-                    ),
-                  ),
-                );
+            ElevatedButton(
+              onPressed: () async {
+                await _addItem(_textEditingController.text);
+                _textEditingController.clear();
               },
+              child: Text('Add'),
             ),
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              await _clearData();
-            },
-            child: Text('Clear All'),
-          ),
-        ],
-      ),
+            Expanded(
+              child: ListView.builder(
+                itemCount: _items.length,
+                itemBuilder: (BuildContext context, int index) {
+
+                  return Dismissible(
+                    key: ValueKey(_items[index]),
+                    onDismissed: (direction) async {
+                      if (direction == DismissDirection.endToStart) {
+                        await _deleteItem(index);
+                      } else if (direction == DismissDirection.startToEnd) {
+                        // Show dialog to edit item
+                        String? newItem = await showDialog<String>(
+                          context: context,
+                          builder: (BuildContext context) {
+
+                            return AlertDialog(
+                              title: Text('Edit Item'),
+                              content: TextField(
+                                controller: TextEditingController(text: _items[index]),
+                                autofocus: true,
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigator.of(context).pop();
+                                  },
+                                  child: Text('Cancel'),
+                                ),
+                                TextButton(
+                                  onPressed: () async {
+                                    await _updateItem(index, _textEditingController.text);
+                                    Navigator.of(context).pop(_textEditingController.text);
+                                  },
+                                  child: Text('Save'),
+                                ),
+                              ],
+                            );
+                          },
+                        );
+                      }
+                    },
+                    background: Container(
+                      color: Colors.green,
+                      alignment: Alignment.centerLeft,
+                      child: Icon(Icons.edit),
+                    ),
+                    secondaryBackground: Container(
+                      color: Colors.red,
+                      alignment: Alignment.centerRight,
+                      child: Icon(Icons.delete),
+                    ),
+                    child: Card(
+                      elevation: 3,
+                      child: ListTile(
+                        title: Text(_items[index]),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                await _clearData();
+              },
+              child: Text('Clear All'),
+            ),
+          ],
+        ),
+      )
     );
   }
 }
